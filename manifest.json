@@ -2,7 +2,7 @@
   "name": "Workout Tracker",
   "short_name": "Workout",
   "description": "Voice-powered workout tracker for logging exercises hands-free",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#2563eb",
