@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Voice-powered workout tracker for logging exercises hands-free">
+    <title>Workout Tracker</title>
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Apple touch icon for iOS -->
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Main App Container -->
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>💪 Workout Tracker</h1>
+            <div class="header-actions">
+                <button id="exportBtn" class="icon-btn" title="Export Data">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs">
+            <button class="tab active" data-tab="log">Log</button>
+            <button class="tab" data-tab="history">History</button>
+            <button class="tab" data-tab="analytics">Analytics</button>
+            <button class="tab" data-tab="exercises">Exercises</button>
+        </nav>
+
+        <!-- Tab Content -->
+        <main class="content">
+            <!-- Log Tab -->
+            <section id="log-tab" class="tab-content active">
+                <div class="log-container">
+                    <div class="input-section">
+                        <h2>Log Workout</h2>
+
+                        <!-- Voice Input Button -->
+                        <button id="voiceBtn" class="voice-btn">
+                            <svg id="micIcon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                                <path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4M8 23h8"/>
+                            </svg>
+                            <span id="voiceText">Tap to speak</span>
+                        </button>
+
+                        <div class="divider">
+                            <span>or type manually</span>
+                        </div>
+
+                        <!-- Manual Input Form -->
+                        <form id="manualForm" class="manual-form">
+                            <div class="form-group">
+                                <label for="exerciseInput">Exercise</label>
+                                <input type="text" id="exerciseInput" placeholder="e.g., Bench Press" list="exerciseList" autocomplete="off">
+                                <datalist id="exerciseList"></datalist>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="setsInput">Sets</label>
+                                    <input type="number" id="setsInput" placeholder="3" min="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="repsInput">Reps</label>
+                                    <input type="number" id="repsInput" placeholder="10" min="1">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="weightInput">Weight (lbs)</label>
+                                <input type="number" id="weightInput" placeholder="185" min="0" step="5">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="notesInput">Notes (optional)</label>
+                                <input type="text" id="notesInput" placeholder="e.g., felt strong">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Add Exercise</button>
+                        </form>
+                    </div>
+
+                    <!-- Today's Workout Summary -->
+                    <div class="today-summary">
+                        <h3>Today's Workout</h3>
+                        <div id="todayList" class="workout-list">
+                            <p class="empty-state">No exercises logged yet</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Tab -->
+            <section id="history-tab" class="tab-content">
+                <div class="history-container">
+                    <div class="history-header">
+                        <h2>Workout History</h2>
+                        <button id="clearHistoryBtn" class="btn btn-secondary">Clear All</button>
+                    </div>
+                    <div id="historyList" class="history-list">
+                        <p class="empty-state">No workout history yet</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Tab -->
+            <section id="analytics-tab" class="tab-content">
+                <div class="analytics-container">
+                    <h2>Analytics</h2>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalWorkouts">0</div>
+                            <div class="stat-label">Total Workouts</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalSets">0</div>
+                            <div class="stat-label">Total Sets</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalVolume">0</div>
+                            <div class="stat-label">Total Volume (lbs)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="favoriteExercise">-</div>
+                            <div class="stat-label">Most Frequent</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Exercise Progress</h3>
+                        <select id="exerciseSelect" class="exercise-select">
+                            <option value="">Select an exercise</option>
+                        </select>
+                        <canvas id="progressChart"></canvas>
+                    </div>
+
+                    <div class="chart-section">
+                        <h3>Weekly Volume</h3>
+                        <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercises Tab -->
+            <section id="exercises-tab" class="tab-content">
+                <div class="exercises-container">
+                    <div class="exercises-header">
+                        <h2>Manage Exercises</h2>
+                        <button id="addExerciseBtn" class="btn btn-primary">Add Exercise</button>
+                    </div>
+
+                    <div class="search-box">
+                        <input type="text" id="exerciseSearch" placeholder="Search exercises...">
+                    </div>
+
+                    <div id="exercisesList" class="exercises-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal for editing/confirming entries -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Confirm Exercise</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body"></div>
+            <div class="modal-footer">
+                <button id="modalCancel" class="btn btn-secondary">Cancel</button>
+                <button id="modalConfirm" class="btn btn-primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="exercises.js"></script>
+    <script src="storage.js"></script>
+    <script src="voice.js"></script>
+    <script src="charts.js"></script>
+    <script src="app.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed'));
+            });
+        }
+    </script>
+</body>
+</html>
